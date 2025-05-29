@@ -348,10 +348,5 @@ allowed file extensions to be considered an image (embed) to be processed
 
 ---
 
-## tomaybedo
-- [ ] ability to use a function for `defaultAltText`?
-- [ ] audio/video (file) embeds? (note: not links like youtube etc, just local files)
-- [ ] maybe link the blog post about how i use this with my setup?
-
 ## Meow
 meow
