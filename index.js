@@ -25,6 +25,8 @@ const defaultOptions = {
     allowLinkLabelFormatting: true,
     // suffix to add to the link target, like '.html'
     uriSuffix: '',
+    // extra attributes to add to the `<a>`
+    htmlAttributes: {},
   },
   // * - default options for image embeds (eg ![[image.png]] )
   imageEmbed: {

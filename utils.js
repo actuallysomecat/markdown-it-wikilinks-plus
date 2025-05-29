@@ -269,7 +269,7 @@ export function processImageEmbed(state, innerParts, rawTarget, options, md) {
       embedType: 'image',
     })
     // console.warn(
-    //   `-- returned extraAttrs: ${JSON.stringify(extraAttrs, null, 2)}`,
+    //   `-- returned imageEmbed extraAttrs: ${JSON.stringify(extraAttrs, null, 2)}`,
     // )
     // else if htmlAttrs is an object, just use those
   } else if (htmlAttrs && typeof htmlAttrs === 'object') {
@@ -359,8 +359,31 @@ export function processWikilink(state, innerParts, rawTarget, options, md) {
   )
   // escape it
   href = escape(href)
-  // set it as the href in the token
-  tokenLinkOpen.attrSet('href', href)
+
+  // * - merge in extra HTML attributes from the htmlAttributes function (or object)
+  // temp var for the ones from user options
+  const htmlAttrs = options.pageLink?.htmlAttributes
+  let extraAttrs = {}
+  // if htmlAttrs is a function, call it with some params available
+  if (typeof htmlAttrs === 'function') {
+    extraAttrs = htmlAttrs({
+      originalHref: href,
+      label: processedLabel,
+    })
+    // console.warn(
+    //   `-- returned pageLink extraAttrs: ${JSON.stringify(extraAttrs, null, 2)}`,
+    // )
+    // else if htmlAttrs is an object, just use those
+  } else if (htmlAttrs && typeof htmlAttrs === 'object') {
+    extraAttrs = htmlAttrs
+  }
+
+  // * - merge the attributes
+  const mergedAttrs = { href, ...extraAttrs }
+  // for each attribute in mergedAttrs, set an attr in the token for it
+  for (const [key, value] of Object.entries(mergedAttrs)) {
+    tokenLinkOpen.attrSet(key, value)
+  }
 
   // maybe do some link label markdown formatting
   if (options.pageLink.allowLinkLabelFormatting) {

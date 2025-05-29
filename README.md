@@ -76,14 +76,15 @@ eleventyConfig.setLibrary("md", md)
 | [pageLink](#pagelink)     | [`forceAllLinksAbsolute`](#pagelinkforcealllinksabsolute)           | `boolean`             | `false`                                                                  |
 | [pageLink](#pagelink)     | [`postProcessLinkTarget`](#pagelinkpostprocesslinktarget)           | `function{}`          | `(target) => target.trim()`                                              |
 | [pageLink](#pagelink)     | [`postProcessLinkLabel`](#pagelinkpostprocesslinklabel)             | `function{}`          | `(label) => label.trim()`                                                |
-| [pageLink](#pagelink)     | [`uriSuffix`](#pagelinkurisuffix)                                   | `string`              | `''`                                                                     |
 | [pageLink](#pagelink)     | [`allowLinkLabelFormatting`](#pagelinkallowlinklabelformatting)     | `boolean`              | `true`                                                                     |
+| [pageLink](#pagelink)     | [`uriSuffix`](#pagelinkurisuffix)                                   | `string`              | `''`                                                                     |
+| [pageLink](#pagelink)     | [`htmlAttributes`](#pagelinkhtmlattributes)                                   | `function` or `object`              | `{}`                                                                     |
 | -                         | -                                                                   | -                     | -                                                                        |
 | [imageEmbed](#imageembed) | [`absoluteBaseURL`](#imageembedabsolutebaseurl)                     | `string`              | `'/'`                                                                    |
 | [imageEmbed](#imageembed) | [`relativeBaseURL`](#imageembedrelativebaseurl)                     | `string`              | `'./'`                                                                   |
 | [imageEmbed](#imageembed) | [`forceAllImageUrlsAbsolute`](#imageembedforceallimageurlsabsolute) | `boolean`             | `false`                                                                  |
 | [imageEmbed](#imageembed) | [`uriSuffix`](#imageembedurisuffix)                                 | `string`              | `''`                                                                     |
-| [imageEmbed](#imageembed) | [`htmlAttributes`](#imageembedhtmlattributes)                       | `function{}`          | `{}`                                                                     |
+| [imageEmbed](#imageembed) | [`htmlAttributes`](#imageembedhtmlattributes)                       | `function` or `object`          | `{}`                                                                     |
 | [imageEmbed](#imageembed) | [`postProcessImageTarget`](#imageembedpostprocessimageTarget)        | `function{}`          | `(imageTarget) => imageTarget.trim().split('/').map(sanitize).join('/')` |
 | [imageEmbed](#imageembed) | [`postProcessAltText` ](#imageembedpostprocessalttext)                   | `function{}`          | `(altText) => altText.trim()`                                            |
 | [imageEmbed](#imageembed) | [`imageFileExt`](#imageembedimagefileext)                                | `string[]`            | `['bmp', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp']`                    |
@@ -106,8 +107,9 @@ eleventyConfig.setLibrary("md", md)
 >     forceAllLinksAbsolute: false,
 >     postProcessLinkTarget: (target) => target.trim(),
 >     postProcessLinkLabel: (label) => label.trim(),
->     uriSuffix: '',
 >     allowLinkLabelFormatting: true,
+>     uriSuffix: '',
+>     htmlAttributes: {},
 >   },
 >   imageEmbed: {
 >     absoluteBaseURL: '/',
@@ -166,12 +168,6 @@ process the wikilink label (the part after a pipe (if present)).
 
 <p align="right"><a href="#options">back to Options</a> 🔼 | <a href="#markdown-it-wikilinks-plus">back to top</a> ⏫</p>
 
-#### `pageLink.uriSuffix`
-**Default:** `''`
-
-suffix to add to the link target (like `.html`)
-
-<p align="right"><a href="#options">back to Options</a> 🔼 | <a href="#markdown-it-wikilinks-plus">back to top</a> ⏫</p>
 
 #### `pageLink.allowLinkLabelFormatting`
 **Default:** `true`
@@ -180,6 +176,52 @@ whether to format markdown in link labels
 
 - if `true`, a link label like `[[test|*testing*]]` would be in italics ('*testing*'), etc
 - if `false`, the same link label would be plaintext `*testing*`, unformatted
+
+<p align="right"><a href="#options">back to Options</a> 🔼 | <a href="#markdown-it-wikilinks-plus">back to top</a> ⏫</p>
+
+#### `pageLink.uriSuffix`
+**Default:** `''`
+
+suffix to add to the link target (like `.html`)
+
+<p align="right"><a href="#options">back to Options</a> 🔼 | <a href="#markdown-it-wikilinks-plus">back to top</a> ⏫</p>
+
+#### `pageLink.htmlAttributes`
+**Default:** `{}`
+
+html attributes to add to the `<a>`
+
+> [!NOTE]
+> `href` from `htmlAttributes` overrides derived `href`
+
+<p align="right"><a href="#options">back to Options</a> 🔼 | <a href="#markdown-it-wikilinks-plus">back to top</a> ⏫</p>
+
+##### `pageLink.htmlAttributes` example function
+```js 
+const customPageLinkAttributes: ({ originalHref, label }) => {
+  let attrs = {}
+  // give wikilinks a class 'internal-link'
+  attrs = { class: `internal-link` }
+
+  // give wikilinks a title referencing their originalHref
+  attrs.title = `internal link to ${originalHref}`
+  
+  // console log the link label for some reason
+  console.log(`link label: ${label}`)
+
+  return attrs
+}
+```
+
+##### `pageLink.htmlAttributes` example object
+```js 
+const customPageLinkAttributes = {
+  // give wikilinks a class 'internal-link'
+  class: `internal-link`,
+  // and some other attribute
+  'custom-attribute': 'meow'
+}
+```
 
 <p align="right"><a href="#options">back to Options</a> 🔼 | <a href="#markdown-it-wikilinks-plus">back to top</a> ⏫</p>
 
@@ -223,7 +265,7 @@ html attributes to add to the `<img>`
 
 ##### `imageEmbed.htmlAttributes` example function
 ```js 
-const customHtmlAttributes: ({ embedType, dimensions, originalHref, altText }) => {
+const customImageEmbedAttributes: ({ embedType, dimensions, originalHref, altText }) => {
   let attrs = {}
   // give image embeds a class 'image-embed'
   attrs = { class: `${embedType}-embed` }
@@ -233,10 +275,22 @@ const customHtmlAttributes: ({ embedType, dimensions, originalHref, altText }) =
     attrs.title = altText
   }
 
+  // console log originalHref and dimensions for some reason
   console.log(`originalHref: ${originalHref}`)
   console.log(`dimensions: ${dimensions}`)
 
   return attrs
+}
+```
+
+##### `imageEmbed.htmlAttributes` example object
+```js 
+const customImageEmbedAttributes = {
+  // give image embeds a custom class
+  class: 'image-embed--class',
+  // and some other attribute
+  'custom-attribute': 'meow'
+}
 ```
 
 <p align="right"><a href="#options">back to Options</a> 🔼 | <a href="#markdown-it-wikilinks-plus">back to top</a> ⏫</p>
