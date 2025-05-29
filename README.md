@@ -338,8 +338,8 @@ allowed file extensions to be considered an image (embed) to be processed
 - `false`: do not generate any `alt` attribute for image embeds without alt text
 
 *or* a `string` to use as the `alt` attribute on any image embeds *without* alt text:
-- example: `defaultAltText = 'PLACEHOLDER'` would give all image embeds without alt text an `alt="PLACEHOLDER"` attribute
-- example: `defaultAltText = ''` would give all image embeds without alt text `alt=""` attribute
+- example: `defaultAltText: 'PLACEHOLDER'` would give all image embeds without alt text an `alt="PLACEHOLDER"` attribute
+- example: `defaultAltText: ''` would give all image embeds without alt text `alt=""` attribute
 
 > [!WARNING]
 > if this is anything other than a `boolean` or `string`, **the image name will be used as the default alt text for any image embeds missing alt text**
